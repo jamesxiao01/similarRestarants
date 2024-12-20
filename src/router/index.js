@@ -6,6 +6,7 @@ import SearchPage from '../views/SearchPage.vue'
 import Login from '../components/Login.vue'
 import MyArticle from '../views/MyArticle.vue'
 import ArticleList from '../views/ArticleList.vue'
+import {useAuth} from '@/stores/authStore'
 
 const routes = [
   {
@@ -22,7 +23,7 @@ const routes = [
     path: '/user',
     name: 'user',
     component: UserProfile,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: false },
   },
   {
     path: '/search',
@@ -38,6 +39,7 @@ const routes = [
     path: '/myarticle',
     name: 'myArticle',
     component: MyArticle,
+    meta: { requiresAuth: false },
   },
   {
     path: '/articlelist',
@@ -51,17 +53,25 @@ const router = createRouter({
     routes,
   });
 
-
-//檢查有用戶資料才能訪問user
-  // router.beforeEach((to, from, next) => {
-  //   const isAuthenticated = localStorage.getItem('userData'); 
-  //   if (to.meta.requiresAuth && !isAuthenticated) {
-  //     alert("請先登入")
-  //     next({ name: 'login' }); // 未登入，回到登入頁面
-  //   } else {
-  //     next(); // 允許訪問
-  //   }
-  // });
+  router.beforeEach((to, from, next) => {
+    const user = useAuth()
+  
+    // 檢查是否需要驗證（這裡檢查 meta.requiresData）
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+      // 假設你想檢查 store 中的某個物件是否為空
+      if (!user.userData || Object.keys(user.userData).length === 0) {
+        // 如果物件為空，跳轉到 Login 頁面
+        alert("請登入")
+        next({ name: 'home' })
+      } else {
+        // 通過檢查，繼續訪問目標頁面
+        next()
+      }
+    } else {
+      // 不需要檢查的頁面直接放行
+      next()
+    }
+  })
   
 
 export default router

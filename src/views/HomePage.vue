@@ -3,8 +3,6 @@ import { ref, onMounted, onUnmounted } from "vue";
 import loader from "../components/googleMapsLoader";
 import StoreType from "../components/HomePage/StoreType.vue"
 import SearchInput from "../components/SearchInput.vue";
-import Header from "../components/Header.vue";
-import Login from '../components/Login.vue';
 
 // Local Storage 工具方法
 const localStorageUtil = {
@@ -21,65 +19,11 @@ const localStorageUtil = {
 export default {
   components: {
     StoreType,
-    Login,
     SearchInput
   },
   setup() {
-    // 控制選單開關的狀態
-    const isMenuOpen = ref(false);
-    const menuContainer = ref(null);
-
-    const toggleMenu = () => {
-      isMenuOpen.value = !isMenuOpen.value;
-      if (isMenuOpen.value) {
-        document.addEventListener('click', handleClickOutside);
-      } else {
-        document.removeEventListener('click', handleClickOutside);
-      }
-    };
-
-    const checkScreenWidth = () => {
-      if (window.innerWidth > 768) {
-        isMenuOpen.value = false; // 自動關閉選單
-      }
-    };
-    
-    const handleClickOutside = (event) => {
-      if (menuContainer.value && !menuContainer.value.contains(event.target)) {
-        isMenuOpen.value = false; // 點擊外部時關閉選單
-      }
-    };
-
-    const showLoginModal = ref(false); // 是否顯示登錄小畫面
-
-    // 開啟登錄小畫面
-    const openLoginModal = () => {
-      showLoginModal.value = true;
-    };
-
-    // 關閉登錄小畫面
-    const closeLoginModal = () => {
-      showLoginModal.value = false;
-    };
-
-    // 在元件掛載和卸載時設置和移除事件監聽器
-    onMounted(() => {
-      window.addEventListener("resize", checkScreenWidth);
-      document.addEventListener('click', handleClickOutside);
-    });
-
-    onUnmounted(() => {
-      window.removeEventListener("resize", checkScreenWidth);
-      document.removeEventListener('click', handleClickOutside);
-    });
-
     return {
-      isMenuOpen,
-      toggleMenu,
-      menuContainer,
-      showLoginModal,
-      openLoginModal,
-      closeLoginModal
+      // 只保留必要的返回值
     };
   },
   data() {
@@ -182,21 +126,20 @@ export default {
 
 <template>
   <div>
-    <Header />
-      <!-- 搜尋區塊 -->
-      <div class="relative flex flex-col items-center justify-center w-screen m-auto text-center bg-top bg-no-repeat bg-cover h-96 bg-index_searchBG"
-      aria-label="Photo by Ivan Torres on Unsplash">
-        <div class="absolute inset-0 bg-gray-800 opacity-40"></div>
-          <h1 class="z-10 px-3 mt-8 text-3xl text-white md:text-5xl text-bold">想知道哪裡有美食？</h1>
-          <h2 class="z-10 px-3 mt-5 text-lg text-white md:text-xl text-bold">從超過 50,000 家精選餐廳中，探索您不知道的熱門美食。</h2>
-          <!-- 搜尋欄容器 -->
-          <div class="z-10 hidden md:flex items-center mt-10 bg-white rounded-full h-11 ">
-             <SearchInput />
-          </div>
+    <!-- 搜尋區塊 -->
+    <div class="relative flex flex-col items-center justify-center m-auto text-center bg-top bg-no-repeat bg-cover h-96 bg-index_searchBG"
+         aria-label="Photo by Ivan Torres on Unsplash">
+      <div class="absolute inset-0 bg-gray-800 opacity-40"></div>
+      <h1 class="z-10 px-3 mt-8 text-3xl text-white md:text-5xl text-bold">想知道哪裡有美食？</h1>
+      <h2 class="z-10 px-3 mt-5 text-lg text-white md:text-xl text-bold">從超過 50,000 家精選餐廳中，探索您不知道的熱門美食。</h2>
+      <!-- 搜尋欄容器 -->
+      <div class="z-10 hidden md:flex items-center mt-10 bg-white rounded-full h-11">
+        <SearchInput />
       </div>
-      <!-- 餐廳分類按鈕 -->
-      <StoreType/>
-    <!-- content end -->
+    </div>
+
+    <!-- 餐廳分類按鈕 -->
+    <StoreType />
   </div>
 </template>
 

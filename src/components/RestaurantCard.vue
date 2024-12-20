@@ -84,7 +84,7 @@
         </div>
         <div class="w-1/4 p-1 mx-1 mt-2 text-xs text-center border rounded-md md:w-1/6 md:border-none">
           <label>
-            <input type="checkbox"> 外帶外送
+            <input type="checkbox"> 可訂購
           </label>
         </div>
       </div>
@@ -103,7 +103,7 @@
       </div>
       <div class="flex flex-col justify-between ml-3 sm:text-xl w-4/5">
         <div class="ml-3">
-          <h2 class="font-bold text-gray-500 text-base">
+          <h2 class="font-bold text-gray-500 text-base h-6 w-[350px] text-ellipsis whitespace-nowrap overflow-hidden">
             <a href="#" class="text-amber-500 hover:text-orange-300" @click="StoreId(place.id)">{{ place.name }}</a>
           </h2>
         </div>
@@ -114,8 +114,9 @@
           <p class="mr-2 font-light">(評論數: {{ place.userRatingCount }})</p>
         </div>
         <div class="flex mt-3 ml-3 text-xs">
-          <p class="mr-2 font-light">平均消費 {{ place.startPrice}} ~ {{ place.endPrice}} 元</p>
-          <p class="mr-2 font-light">距離 {{ place.districts || "??" }} 公里</p>
+          <p v-if="!place.startPrice || !place.endPrice" class="mr-2 font-light">平均消費：未提供</p>
+          <p v-else class="mr-2 font-light">平均消費： {{ place.startPrice}} ~ {{ place.endPrice}} 元</p>
+          <p class="mr-2 font-light">距離 {{ place.distance.toFixed(2) || "??" }} 公里</p>
         </div>
         <div class="mt-3 mx-3 hidden md:flex items-center text-sm">
           <span>
@@ -126,19 +127,19 @@
           <p> {{ place?.openNow ? '營業中' : '已打烊' }}</p>
         </div>
         <div class="mt-3 ml-3 flex flex-wrap items-center">
-        <span>
+        <!-- <span>
           <a href="#" 
             class="hidden md:block bg-gray-200 rounded-full px-3 py-1 text-sm mr-2 mb-1 items-center">
             <font-awesome-icon :icon="['fas', 'wand-magic-sparkles']" class="text-orange-400"/>
                 相似餐廳
           </a>
-        </span>
+        </span> -->
         <span>
-          <a href="#" 
+          <button @click="Search.nearSearch(router, place.lat, place.lng)"
             class="hidden md:block bg-gray-200 rounded-full px-3 py-1 text-sm mr-2 mb-1 items-center">
             <font-awesome-icon :icon="['fas', 'location-dot']" class="text-orange-400"/>
                 附近                 
-          </a>
+          </button>
         </span>
       </div>  
       </div>
@@ -172,13 +173,14 @@ const StoreId = (placeId) => {
   Store.StoreId(router, placeId)
 }
 
+// const nearSearch = (lat, lng) => {
+//   Search.nearSearch(router,lat ,lng)
+// }
 
-const result = computed(() => Search.result)
 const sortMenu = ref(false);
 const costMenu = ref(false);
 const sortOptions = computed(() => Search.sortOptions)
 const costOptions = computed(() => Search.costOptions)
-const filteredOpen = Search.filteredOpen
 
 const toggleSort = () => {
   sortMenu.value = !sortMenu.value;

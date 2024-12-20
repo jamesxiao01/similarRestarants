@@ -5,7 +5,7 @@
             <!-- 個人照片 -->
             <div class="flex justify-center">
                 <img
-                    :src="profilePicture"
+                    :src="userData.picture"
                     alt="Profile Picture"
                     class="w-24 h-24 rounded-full object-cover border border-gray-300"
                 />
@@ -150,77 +150,59 @@
     </div>
 </template>
 
-<script>
-export default {
-    name: "UserProfile",
-    data() {
-        return {
-            menuVisible: false,
-            isEditing: false, // 是否處於編輯模式
-            profilePicture: "https://via.placeholder.com/100", // 頭像
-            username: "編輯名稱", // 使用者名稱
-            instagramUsername: "", // IG 帳號
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuth } from '@/stores/authStore'
 
-            userData: null,  //用戶資料
-        };
-    },
-    computed: {
-        instagramLink() {
-            // 生成 IG 連結
-            return `https://instagram.com/${this.instagramUsername}`;
-        },
-    },
-    methods: {
-        toggleEditMode() {
-            this.isEditing = true; // 進入編輯模式
-        },
-        saveProfile() {
-            // 保存並退出編輯模式
-            this.isEditing = false;
-        },
-        cancelEdit() {
-            // 取消編輯，清空 IG 帳號
-            this.isEditing = false;
-            this.instagramUsername = "";
-        },
-        toggleMenu() {
-        this.menuVisible = !this.menuVisible;
-        },
-        writeReview() {
-        alert("撰寫食記功能即將啟用！");
-        },
-        // logout() {
-        // alert("已登出！");
-        // },
-        onPhotoChange(event) {
-        // 更新頭像
-        const file = event.target.files[0];
-            if (file) {
-                this.profilePicture = URL.createObjectURL(file);
-            }
-        },
+const user = useAuth()
+const { userData, logout} = user
+const menuVisible = ref(false);
+const isEditing = ref(false);
+const profilePicture = ref('https://via.placeholder.com/100'); // 頭像
+const username = ref('編輯名稱'); // 使用者名稱
+const instagramUsername = ref(''); // IG 帳號
+// const userData = ref(null); // 用戶資料
 
-        //拿取用戶資料
-        getUserDataFromLocalStorage() {
-          const storedUserData = localStorage.getItem("userData"); 
-          if (storedUserData) {
-            this.userData = JSON.parse(storedUserData); // 
-          }
-        },
-      
-        // 登出後清除資料，返回首頁
-        logout() {
-          localStorage.removeItem("userData"); 
-          this.userData = null; // 
-          this.$router.push({ name: "home" }); 
-        },
-    },
-    mounted() {
-  this.$nextTick(() => {
-    this.getUserDataFromLocalStorage();
-  });
-}
+const router = useRouter();
 
+// 計算屬性 - 生成 IG 連結
+const instagramLink = computed(() => {
+  return `https://instagram.com/${instagramUsername.value}`;
+});
+
+// 切換編輯模式
+const toggleEditMode = () => {
+  isEditing.value = true;
+};
+
+// 保存使用者資料並退出編輯模式
+const saveProfile = () => {
+  isEditing.value = false;
+};
+
+// 取消編輯，恢復原始值（可擴展為重置到用戶原始數據）
+const cancelEdit = () => {
+  isEditing.value = false;
+  instagramUsername.value = '';
+};
+
+// 切換選單顯示/隱藏
+const toggleMenu = () => {
+  menuVisible.value = !menuVisible.value;
+};
+
+// 撰寫食記的功能（僅示範）
+const writeReview = () => {
+  alert('撰寫食評功能即將啟用！');
+};
+
+// 更新頭像
+const onPhotoChange = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    profilePicture.value = URL.createObjectURL(file);
+  }
 };
 </script>
 

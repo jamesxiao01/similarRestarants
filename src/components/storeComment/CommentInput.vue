@@ -7,7 +7,11 @@
             <div class="w-full text-left md:w-96">
                 <button @click="openComment" class="p-2 border-2 border-solid rounded-lg border-amber-500 text-amber-500">留下您對餐廳的評論</button>
                 <Stars class="my-2" />
-                <div class="flex flex-col" v-if="isExpanded">
+                <div class="flex flex-col relative" v-if="isExpanded">
+                    <div v-if="user.userData">
+                    <!-- <div v-if="!user.userData" class=" absolute top-[-5px] left-[-10px] flex justify-center items-center bg-gray-900 h-[110%] w-[110%] opacity-50" >
+                        <p class="font-black text-yellow-200">請先<a href="#" class="m-2 text-orange-600">登入</a>以使用更多功能!</p>                        
+                    </div> -->
                     <textarea
                         v-model="commentText"
                         maxlength="200"
@@ -23,6 +27,10 @@
                     </div>
                     <UploadPic />
                     <button @click="submitComment" class="w-full p-2 my-2 font-bold rounded-lg shadow md:flex-1 text-amber-500">送出評論</button>
+                    </div>
+                    <div v-else class="flex justify-center items-center bg-gray-400 h-[100px] w-[250px]">
+                        <p class="font-black">請先<a href="#" class="m-2 text-orange-200">登入</a>以使用更多功能!</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -36,6 +44,9 @@ import UploadPic from "./UploadPic.vue"
 import { useStarsStore } from '../../stores/starStore';
 import { useCommentStore } from '../../stores/commentStore';
 import { usePicStore } from '../../stores/picStore';
+import { useAuth } from '@/stores/authStore'
+
+const user = useAuth()
 
 const time = new Date()
 const price = ref('')
